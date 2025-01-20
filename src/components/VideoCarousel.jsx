@@ -3,6 +3,7 @@ import { hightlightsSlides } from "../constants";
 import gsap from "gsap";
 import { pauseImg, playImg, replayImg } from "../utils";
 import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const VideoCarousel = () => {
   const videoRef = useRef([]);
@@ -18,6 +19,7 @@ const VideoCarousel = () => {
   });
   const [loadedData, setLoadedData] = useState([]);
   const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
+  gsap.registerPlugin(ScrollTrigger);
 
   useGSAP(() => {
     gsap.to('#slider', {
@@ -91,7 +93,7 @@ const VideoCarousel = () => {
 
       const animUpdate = () => {
         anim.progress(
-          videoRef.current[videoId] / hightlightsSlides[videoId].videoDuration
+          videoRef.current[videoId].currentTime / hightlightsSlides[videoId].videoDuration
         );
       };
       isPlaying ? gsap.ticker.add(animUpdate) : gsap.ticker.remove(animUpdate);
@@ -123,6 +125,12 @@ const VideoCarousel = () => {
           isPlaying: !prevVideo.isPlaying,
         }));
         break;
+      case "pause":
+        setVideo((prevVideo) => ({
+          ...prevVideo,
+          isPlaying: !prevVideo.isPlaying,
+        }));
+        break;
       default:
         return video;
     }
@@ -136,9 +144,12 @@ const VideoCarousel = () => {
               <div className="w-full h-full flex-center rounded-3xl overflow-hidden bg-black">
                 <video
                   id="video"
-                  className="pointer-events-none"
                   preload="auto"
                   muted
+                  className={`${
+                    list.id == 2 && 'translate-x-44'}
+                    pointer-events-none
+                  `}
                   onEnded={() => 
                     i !== 3 ? handleProcess('video-end', i) : handleProcess('video-last')
                   }
