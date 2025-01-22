@@ -45,15 +45,12 @@ const VideoCarousel = () => {
   useEffect(() => {
     if (loadedData.length === videoRef.current.length) {
       if (!isPlaying) {
-        console.log("video durdurulacak")
         videoRef.current[videoId].pause();
       } else {
-        console.log("video oynatılacak")
-
         startPlay && videoRef.current[videoId].play();
       }
     }
-  }, [startPlay, videoId, startPlay, loadedData]);
+  }, [startPlay, videoId, isPlaying, loadedData]);
 
   const handleLoadedMetaData = (i, e) => setLoadedData((pre) => [...pre, e]);
 
@@ -79,7 +76,7 @@ const VideoCarousel = () => {
           }
         },
         onComplete: () => {
-          console.log(isPlaying)
+          console.log(isPlaying);
           if (isPlaying) {
             gsap.to(videoDivRef.current[videoId], {
               width: "12px",
@@ -151,8 +148,7 @@ const VideoCarousel = () => {
                   id="video"
                   preload="auto"
                   muted
-                  className={`${
-                    list.id == 2 && 'translate-x-44'}
+                  className={`${list.id == 2 && "translate-x-44"}
                     pointer-events-none
                   `}
                   onEnded={() =>
