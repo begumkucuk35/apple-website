@@ -3,7 +3,8 @@ import { hightlightsSlides } from "../constants";
 import gsap from "gsap";
 import { pauseImg, playImg, replayImg } from "../utils";
 import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollTrigger } from "gsap/all";
+gsap.registerPlugin(ScrollTrigger);
 
 const VideoCarousel = () => {
   const videoRef = useRef([]);
@@ -19,14 +20,13 @@ const VideoCarousel = () => {
   });
   const [loadedData, setLoadedData] = useState([]);
   const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
-  gsap.registerPlugin(ScrollTrigger);
 
   useGSAP(() => {
-    gsap.to('#slider', {
+    gsap.to("#slider", {
       transform: `translateX(${-100 * videoId}%)`,
       duration: 2,
-      ease: 'power2.inOut',
-    })
+      ease: "power2.inOut",
+    });
     gsap.to("#video", {
       scrollTrigger: {
         trigger: "#video",
@@ -43,10 +43,13 @@ const VideoCarousel = () => {
   }, [isEnd, videoId]);
 
   useEffect(() => {
-    if (loadedData.length > 3) {
+    if (loadedData.length === videoRef.current.length) {
       if (!isPlaying) {
+        console.log("video durdurulacak")
         videoRef.current[videoId].pause();
       } else {
+        console.log("video oynatılacak")
+
         startPlay && videoRef.current[videoId].play();
       }
     }
@@ -76,6 +79,7 @@ const VideoCarousel = () => {
           }
         },
         onComplete: () => {
+          console.log(isPlaying)
           if (isPlaying) {
             gsap.to(videoDivRef.current[videoId], {
               width: "12px",
@@ -93,7 +97,8 @@ const VideoCarousel = () => {
 
       const animUpdate = () => {
         anim.progress(
-          videoRef.current[videoId].currentTime / hightlightsSlides[videoId].videoDuration
+          videoRef.current[videoId].currentTime /
+            hightlightsSlides[videoId].videoDuration
         );
       };
       isPlaying ? gsap.ticker.add(animUpdate) : gsap.ticker.remove(animUpdate);
@@ -139,7 +144,7 @@ const VideoCarousel = () => {
     <>
       <div className="flex items-center">
         {hightlightsSlides.map((list, i) => (
-          <div key={i} id="slider" className="sm:pr-20 pr-10">
+          <div key={list.id} id="slider" className="sm:pr-20 pr-10">
             <div className="video-carousel_container">
               <div className="w-full h-full flex-center rounded-3xl overflow-hidden bg-black">
                 <video
@@ -150,8 +155,10 @@ const VideoCarousel = () => {
                     list.id == 2 && 'translate-x-44'}
                     pointer-events-none
                   `}
-                  onEnded={() => 
-                    i !== 3 ? handleProcess('video-end', i) : handleProcess('video-last')
+                  onEnded={() =>
+                    i !== 3
+                      ? handleProcess("video-end", i)
+                      : handleProcess("video-last")
                   }
                   playsInline={true}
                   ref={(el) => (videoRef.current[i] = el)}
@@ -167,8 +174,8 @@ const VideoCarousel = () => {
                 </video>
               </div>
               <div className="absolute top-12 left-[5%] z-10">
-                {list.textLists.map((text) => (
-                  <p key={text} className="md:text-2xl text-xl font-medium">
+                {list.textLists.map((text, i) => (
+                  <p key={i} className="md:text-2xl text-xl font-medium">
                     {text}
                   </p>
                 ))}
